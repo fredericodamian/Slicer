@@ -908,15 +908,6 @@ qMRMLSortFilterSubjectHierarchyProxyModel::AcceptType qMRMLSortFilterSubjectHier
     }
   }
 
-  // Do not show items in virtual branches if their parent is not accepted for any reason
-  vtkIdType parentItemID = shNode->GetItemParent(itemID);
-  if (parentItemID && shNode->IsItemVirtualBranchParent(parentItemID))
-  {
-    if (this->filterAcceptsItem(parentItemID, false) == Reject)
-    {
-      return Reject;
-    }
-  }
 
   // Filter by item attribute
   QList<qMRMLSortFilterSubjectHierarchyProxyModelPrivate::AttributeFilter>::const_iterator filterIt;
@@ -1038,6 +1029,16 @@ qMRMLSortFilterSubjectHierarchyProxyModel::AcceptType qMRMLSortFilterSubjectHier
       return AcceptDueToBeingParentOfAccepted;
     }
     else
+    {
+      return Reject;
+    }
+  }
+
+  // Do not show items in virtual branches if their parent is not accepted for any reason
+  vtkIdType parentItemID = shNode->GetItemParent(itemID);
+  if (parentItemID && shNode->IsItemVirtualBranchParent(parentItemID))
+  {
+    if (this->filterAcceptsItem(parentItemID, false) == Reject)
     {
       return Reject;
     }
